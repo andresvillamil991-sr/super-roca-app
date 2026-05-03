@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { supabase } from '../lib/supabase'
+
 
 type Product = { id:number; name:string; base_price:number; presentation:string | null }
 type Seller = { id:number; name:string }

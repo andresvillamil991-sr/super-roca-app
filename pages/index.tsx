@@ -1,19 +1,4 @@
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-export default function Home() {
-  const [cliente, setCliente] = useState("");
-  const [producto, setProducto] = useState("");
-  const [cantidad, setCantidad] = useState("");
-  const [precio, setPrecio] = useState("");
-  const [pedidos, setPedidos] = useState<any[]>([]);
-
- const guardarPedido = async () => {
+const guardarPedido = async () => {
   if (!cliente) {
     alert("Ingrese cliente");
     return;
@@ -52,4 +37,3 @@ export default function Home() {
     alert("Pedido completo guardado");
   }
 };
-}

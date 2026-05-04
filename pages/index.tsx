@@ -31,3 +31,7 @@ const guardarPedido = async () => {
     alert("Pedido guardado");
   }
 };
+setCliente("");
+setProducto("");
+setCantidad("");
+setPrecio("");

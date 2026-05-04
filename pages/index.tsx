@@ -13,86 +13,43 @@ export default function Home() {
   const [precio, setPrecio] = useState("");
   const [pedidos, setPedidos] = useState<any[]>([]);
 
-  const guardarPedido = async () => {
-    if (!cliente || !producto || !cantidad || !precio) {
-      alert("Por favor completa todos los campos");
-      return;
-    }
+ const guardarPedido = async () => {
+  if (!cliente) {
+    alert("Ingrese cliente");
+    return;
+  }
 
-    const { error } = await supabase.from("pedidos").insert({
-      cliente,
-      producto,
-      cantidad: Number(cantidad),
-      precio: Number(precio),
-    });
+  // 1. Guardar pedido principal
+  const { data: pedidoGuardado, error: errorPedido } = await supabase
+    .from("pedidos")
+    .insert([{ cliente }])
+    .select()
+    .single();
 
-    if (error) {
-      alert("Error al guardar");
-    } else {
-      alert("Pedido guardado");
-      setCliente("");
-      setProducto("");
-      setCantidad("");
-      setPrecio("");
-      cargarPedidos();
-    }
-  };
+  if (errorPedido) {
+    alert("Error creando pedido");
+    return;
+  }
 
-  const cargarPedidos = async () => {
-    const { data, error } = await supabase
-      .from("pedidos")
-      .select("*")
-      .order("id", { ascending: false });
+  const pedidoId = pedidoGuardado.id;
 
-    if (!error && data) {
-      setPedidos(data);
-    }
-  };
+  // 2. Guardar productos (ejemplo con uno por ahora)
+  const { error: errorDetalle } = await supabase
+    .from("detalle_pedidos")
+    .insert([
+      {
+        pedido_id: pedidoId,
+        producto,
+        cantidad: Number(cantidad),
+        precio: Number(precio),
+        subtotal: Number(cantidad) * Number(precio),
+      },
+    ]);
 
-  useEffect(() => {
-    cargarPedidos();
-  }, []);
-
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Sistema Super Roca</h1>
-
-      <input
-        placeholder="Cliente"
-        value={cliente}
-        onChange={(e) => setCliente(e.target.value)}
-      />
-      <br />
-      <input
-        placeholder="Producto"
-        value={producto}
-        onChange={(e) => setProducto(e.target.value)}
-      />
-      <br />
-      <input
-        placeholder="Cantidad"
-        value={cantidad}
-        onChange={(e) => setCantidad(e.target.value)}
-      />
-      <br />
-      <input
-        placeholder="Precio"
-        value={precio}
-        onChange={(e) => setPrecio(e.target.value)}
-      />
-      <br />
-      <button onClick={guardarPedido}>Guardar Pedido</button>
-
-      <h2>Pedidos registrados</h2>
-
-      {pedidos.map((p) => (
-        <div key={p.id} style={{ border: "1px solid #ccc", marginTop: 10, padding: 10 }}>
-          <p><b>Cliente:</b> {p.cliente}</p>
-          <p><b>Producto:</b> {p.producto}</p>
-          <p><b>Cantidad:</b> {p.cantidad}</p>
-          <p><b>Precio:</b> {p.precio}</p>
-        </div>
-      ))}
-    </div>
-  );
+  if (errorDetalle) {
+    alert("Error guardando productos");
+  } else {
+    alert("Pedido completo guardado");
+  }
+};
 }

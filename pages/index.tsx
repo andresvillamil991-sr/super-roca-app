@@ -11,60 +11,23 @@ export default function Home() {
   const [producto, setProducto] = useState("");
   const [cantidad, setCantidad] = useState("");
   const [precio, setPrecio] = useState("");
+const guardarPedido = async () => {
 
-  const guardarPedido = async () => {
-    const { error } = await supabase.from("pedidos").insert([
-      {
-        cliente,
-        producto,
-        cantidad: Number(cantidad),
-        precio: Number(precio),
-      },
-    ]);
+  if (!cliente || !producto || !cantidad || !precio) {
+    alert("Por favor completa todos los campos");
+    return;
+  }
 
-    if (error) {
-      alert("Error al guardar");
-      console.log(error);
-    } else {
-      alert("Pedido guardado");
-      setCliente("");
-      setProducto("");
-      setCantidad("");
-      setPrecio("");
-    }
-  };
+  const { error } = await supabase.from("pedidos").insert({
+    cliente,
+    producto,
+    cantidad: Number(cantidad),
+    precio: Number(precio),
+  });
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h1>Sistema Super Roca</h1>
-
-      <input
-        placeholder="Cliente"
-        value={cliente}
-        onChange={(e) => setCliente(e.target.value)}
-      /><br /><br />
-
-      <input
-        placeholder="Producto"
-        value={producto}
-        onChange={(e) => setProducto(e.target.value)}
-      /><br /><br />
-
-      <input
-        placeholder="Cantidad"
-        value={cantidad}
-        onChange={(e) => setCantidad(e.target.value)}
-      /><br /><br />
-
-      <input
-        placeholder="Precio"
-        value={precio}
-        onChange={(e) => setPrecio(e.target.value)}
-      /><br /><br />
-
-      <button onClick={guardarPedido}>
-        Guardar Pedido
-      </button>
-    </div>
-  );
-}
+  if (error) {
+    alert("Error al guardar");
+  } else {
+    alert("Pedido guardado");
+  }
+};
